@@ -16,10 +16,5 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-12345")
 
     # PostgreSQL database connection URI from DATABASE_URL
-    # Render provides postgres://, which SQLAlchemy 1.4+ expects as postgresql://
-    raw_db_url = os.environ.get("DATABASE_URL")
-    if raw_db_url and raw_db_url.startswith("postgres://"):
-        raw_db_url = raw_db_url.replace("postgres://", "postgresql://", 1)
-
-    SQLALCHEMY_DATABASE_URI = raw_db_url
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
