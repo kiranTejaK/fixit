@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Add Asset — FiXiT{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('main.assets') }}">Assets</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Add Asset</li>
+    </ol>
+  </nav>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h4 class="card-title fw-bold mb-0"><i class="bi bi-plus-circle me-2 text-primary"></i>Add New Asset</h4>
+        </div>
+        <div class="card-body p-4">
+
+          <form method="POST" action="{{ url_for('main.add_asset') }}">
+
+            <!-- Asset Name -->
+            <div class="mb-3">
+              <label for="name" class="form-label fw-semibold">Asset Name <span class="text-danger">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                placeholder="e.g., Living Room Air Conditioner"
+                value="{{ form_data.get('name', '') }}"
+                required
+              >
+            </div>
+
+            <!-- Category -->
+            <div class="mb-3">
+              <label for="category" class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+              <select class="form-select" id="category" name="category" required>
+                <option value="" disabled {% if not form_data.get('category') %}selected{% endif %}>-- Select Category --</option>
+                {% for cat in categories %}
+                  <option value="{{ cat }}" {% if form_data.get('category') == cat %}selected{% endif %}>
+                    {{ cat }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Purchase Date and Service Interval -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="purchase_date" class="form-label fw-semibold">Purchase Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="purchase_date"
+                  name="purchase_date"
+                  value="{{ form_data.get('purchase_date', '') }}"
+                >
+                <div class="form-text">Optional date of purchase</div>
+              </div>
+              <div class="col-md-6">
+                <label for="maintenance_interval_months" class="form-label fw-semibold">
+                  Service Interval (Months) <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="maintenance_interval_months"
+                  name="maintenance_interval_months"
+                  min="1"
+                  max="120"
+                  value="{{ form_data.get('maintenance_interval_months', '6') }}"
+                  required
+                >
+                <div class="form-text">Recommended service frequency</div>
+              </div>
+            </div>
+
+            <!-- Last Maintenance Date -->
+            <div class="mb-3">
+              <label for="last_maintenance_date" class="form-label fw-semibold">Last Maintenance Date</label>
+              <input
+                type="date"
+                class="form-control"
+                id="last_maintenance_date"
+                name="last_maintenance_date"
+                value="{{ form_data.get('last_maintenance_date', '') }}"
+              >
+              <div class="form-text">Leave blank if this asset hasn't been serviced yet</div>
+            </div>
+
+            <!-- Notes -->
+            <div class="mb-4">
+              <label for="notes" class="form-label fw-semibold">Notes</label>
+              <textarea
+                class="form-control"
+                id="notes"
+                name="notes"
+                rows="3"
+                placeholder="Additional notes, model numbers, warranty information..."
+              >{{ form_data.get('notes', '') }}</textarea>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-end gap-2">
+              <a href="{{ url_for('main.assets') }}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-check2 me-1"></i> Save Asset
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

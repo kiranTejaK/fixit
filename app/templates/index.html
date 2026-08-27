@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — FiXiT{% endblock %}
+
+{% block content %}
+
+<!-- Hero Banner -->
+<section class="hero-banner text-white py-5 mb-4 shadow-sm">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-6 fw-bold mb-2">Home Maintenance Manager</h1>
+        <p class="lead text-light opacity-75 mb-4">
+          Keep your household appliances running smoothly. Track service history and get reminded before maintenance is overdue.
+        </p>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{{ url_for('main.add_asset') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Add New Asset
+          </a>
+          <a href="{{ url_for('main.assets') }}" class="btn btn-outline-light">
+            <i class="bi bi-list-ul me-1"></i> View All Assets
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-4 d-none d-lg-block text-center text-info opacity-50">
+        <i class="bi bi-house-gear" style="font-size: 8rem;"></i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container pb-5">
+
+  <!-- Overview Statistics Cards -->
+  <h4 class="fw-bold mb-3"><i class="bi bi-speedometer2 me-2 text-primary"></i>Maintenance Overview</h4>
+  <div class="row g-3 mb-5">
+
+    <!-- Total Assets -->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card stat-card shadow-sm h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <div class="stat-icon bg-primary-subtle text-primary">
+            <i class="bi bi-box-seam"></i>
+          </div>
+          <div>
+            <div class="text-muted small text-uppercase fw-semibold">Total Assets</div>
+            <div class="fs-3 fw-bold">{{ total_assets }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Up to Date -->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card stat-card shadow-sm h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <div class="stat-icon bg-success-subtle text-success">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <div>
+            <div class="text-muted small text-uppercase fw-semibold">Up to Date</div>
+            <div class="fs-3 fw-bold">{{ up_to_date | length }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Due Soon -->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card stat-card shadow-sm h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <div class="stat-icon bg-warning-subtle text-warning">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <div>
+            <div class="text-muted small text-uppercase fw-semibold">Due Soon</div>
+            <div class="fs-3 fw-bold">{{ due_soon | length }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overdue -->
+    <div class="col-sm-6 col-lg-3">
+      <div class="card stat-card shadow-sm h-100">
+        <div class="card-body d-flex align-items-center gap-3">
+          <div class="stat-icon bg-danger-subtle text-danger">
+            <i class="bi bi-exclamation-triangle"></i>
+          </div>
+          <div>
+            <div class="text-muted small text-uppercase fw-semibold">Overdue</div>
+            <div class="fs-3 fw-bold">{{ overdue | length }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Attention & Recently Serviced Sections -->
+  <div class="row g-4">
+
+    <!-- Needs Attention (Overdue + Due Soon) -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white py-3">
+          <h5 class="card-title mb-0 fw-bold text-danger">
+            <i class="bi bi-exclamation-circle me-2"></i>Assets Requiring Attention
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          {% set attention_list = overdue + due_soon %}
+          {% if attention_list %}
+            <div class="list-group list-group-flush">
+              {% for asset in attention_list %}
+                <a href="{{ url_for('main.asset_detail', asset_id=asset.id) }}" class="list-group-item list-group-item-action p-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold text-dark">{{ asset.name }}</span>
+                    <span class="badge {{ asset.status_badge_class }}">
+                      {{ asset.maintenance_status }}
+                    </span>
+                  </div>
+                  <div class="text-muted small d-flex justify-content-between flex-wrap gap-2">
+                    <span>Category: {{ asset.category }}</span>
+                    <span>
+                      {% if asset.next_maintenance_date %}
+                        Due Date: {{ asset.next_maintenance_date.strftime('%b %d, %Y') }}
+                      {% else %}
+                        No service recorded yet
+                      {% endif %}
+                    </span>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="p-4 text-center text-muted">
+              <i class="bi bi-check-circle text-success fs-1 mb-2 d-block"></i>
+              <p class="mb-0">All registered assets are currently up to date!</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Recently Maintained Assets -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0 fw-bold">
+            <i class="bi bi-clock-history me-2 text-primary"></i>Recently Maintained
+          </h5>
+          <a href="{{ url_for('main.assets') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+        </div>
+        <div class="card-body p-0">
+          {% if recently_maintained %}
+            <div class="list-group list-group-flush">
+              {% for asset in recently_maintained %}
+                <a href="{{ url_for('main.asset_detail', asset_id=asset.id) }}" class="list-group-item list-group-item-action p-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-semibold">{{ asset.name }}</span>
+                    <span class="badge {{ asset.status_badge_class }}">{{ asset.maintenance_status }}</span>
+                  </div>
+                  <div class="text-muted small">
+                    Last Serviced: {{ asset.last_maintenance_date.strftime('%b %d, %Y') }}
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="p-4 text-center text-muted">
+              <i class="bi bi-inbox text-secondary fs-1 mb-2 d-block"></i>
+              <p class="mb-0">No maintenance records found.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

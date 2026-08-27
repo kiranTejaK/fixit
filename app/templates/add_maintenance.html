@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Log Maintenance — {{ asset.name }} — FiXiT{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('main.assets') }}">Assets</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('main.asset_detail', asset_id=asset.id) }}">{{ asset.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Log Maintenance</li>
+    </ol>
+  </nav>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- Asset Context Banner -->
+      <div class="alert alert-secondary d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <span class="text-muted small d-block">Adding record for asset:</span>
+          <strong class="fs-5">{{ asset.name }}</strong>
+          <span class="badge bg-light text-dark ms-2">{{ asset.category }}</span>
+        </div>
+        <span class="badge {{ asset.status_badge_class }}">{{ asset.maintenance_status }}</span>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h4 class="card-title fw-bold mb-0">
+            <i class="bi bi-tools me-2 text-primary"></i>Add Maintenance Record
+          </h4>
+        </div>
+        <div class="card-body p-4">
+
+          <form method="POST" action="{{ url_for('main.add_maintenance', asset_id=asset.id) }}">
+
+            <!-- Maintenance Date -->
+            <div class="mb-3">
+              <label for="maintenance_date" class="form-label fw-semibold">
+                Service Date <span class="text-danger">*</span>
+              </label>
+              <input
+                type="date"
+                class="form-control"
+                id="maintenance_date"
+                name="maintenance_date"
+                value="{{ form_data.get('maintenance_date', '') }}"
+                required
+              >
+            </div>
+
+            <!-- Service Type -->
+            <div class="mb-3">
+              <label for="service_type" class="form-label fw-semibold">
+                Service Type / Description <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="service_type"
+                name="service_type"
+                placeholder="e.g., Annual Servicing, Oil Change, Filter Replacement"
+                value="{{ form_data.get('service_type', '') }}"
+                required
+              >
+            </div>
+
+            <!-- Service Provider and Cost -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-7">
+                <label for="service_provider" class="form-label fw-semibold">Service Provider / Technician</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="service_provider"
+                  name="service_provider"
+                  placeholder="e.g., Authorized Brand Center or Technician Name"
+                  value="{{ form_data.get('service_provider', '') }}"
+                >
+              </div>
+              <div class="col-md-5">
+                <label for="cost" class="form-label fw-semibold">Cost (₹)</label>
+                <div class="input-group">
+                  <span class="input-group-text">₹</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    class="form-control"
+                    id="cost"
+                    name="cost"
+                    placeholder="0.00"
+                    value="{{ form_data.get('cost', '') }}"
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="mb-4">
+              <label for="notes" class="form-label fw-semibold">Notes</label>
+              <textarea
+                class="form-control"
+                id="notes"
+                name="notes"
+                rows="3"
+                placeholder="Details of what was repaired, replaced, or recommended for next time..."
+              >{{ form_data.get('notes', '') }}</textarea>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-end gap-2">
+              <a href="{{ url_for('main.asset_detail', asset_id=asset.id) }}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-check2 me-1"></i> Save Record
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
